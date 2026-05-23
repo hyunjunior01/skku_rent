@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>성균관대학교 긴급 물품 대여 서비스</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<link href="[https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap](https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap)" rel="stylesheet">
 <!-- 고급 벡터 아이콘 라이브러리 (Lucide) -->
-<script src="https://unpkg.com/lucide@latest"></script>
+<script src="[https://unpkg.com/lucide@latest](https://unpkg.com/lucide@latest)"></script>
 <style>
   :root {
     --skku-green: #003E38; 
@@ -264,20 +264,17 @@
 </head>
 <body>
 
-<!-- ═══ LOGIN SCREEN ═══ -->
 <div id="loginScreen" class="screen active">
   <div class="login-card">
     <div class="login-logo">
       <div class="badge">성균관대학교 (SKKU)</div>
       <h1>긴급 물품<br><span>대여 서비스</span></h1>
     </div>
-
     <div class="login-input-group">
       <label>학번 입력</label>
       <input type="text" id="loginInput" placeholder="예: 2024123456" maxlength="20"
         onkeydown="if(event.key==='Enter') window.doLogin()" inputmode="numeric">
     </div>
-
     <button class="btn-primary" onclick="window.doLogin()">
       <i data-lucide="log-in" style="width:20px; height:20px;"></i> 시작하기
     </button>
@@ -285,7 +282,6 @@
   </div>
 </div>
 
-<!-- ═══ USER SCREEN ═══ -->
 <div id="userScreen" class="screen">
   <div class="top-header">
     <div class="header-titles">
@@ -294,7 +290,6 @@
     </div>
     <button class="btn-logout" onclick="window.logout()">로그아웃</button>
   </div>
-
   <div class="content-area">
     <div class="section-card" style="padding: 24px;">
       <div class="section-title" style="margin-bottom:16px;"><i data-lucide="library"></i> 중앙학술정보관 안내</div>
@@ -309,7 +304,6 @@
         </div>
       </div>
     </div>
-
     <div class="section-card">
       <div class="section-title"><i data-lucide="package"></i> 경영관 필로티 대여 부스</div>
       <p style="font-size:13px; color:var(--text-muted); margin-bottom:8px; font-weight:600;">
@@ -318,19 +312,13 @@
       </p>
       <div class="items-grid" id="itemsGrid"></div>
     </div>
-
     <div class="section-card">
       <div class="section-title"><i data-lucide="clipboard-list"></i> 나의 예약 현황</div>
-      <div id="myReservations">
-        <div style="text-align:center; padding: 40px 20px; color:var(--text-muted); font-size:14px; font-weight:600;">
-          아직 예약한 내역이 없습니다.
-        </div>
-      </div>
+      <div id="myReservations"></div>
     </div>
   </div>
 </div>
 
-<!-- ═══ ADMIN SCREEN ═══ -->
 <div id="adminScreen" class="screen">
   <div class="top-header">
     <div class="header-titles">
@@ -339,7 +327,6 @@
     </div>
     <button class="btn-logout" onclick="window.logout()">로그아웃</button>
   </div>
-  
   <div class="content-area">
     <div class="admin-stats">
       <div class="stat-card">
@@ -351,12 +338,10 @@
         <div class="num" id="statPending">0</div>
       </div>
     </div>
-
     <div class="section-card">
       <div class="section-title"><i data-lucide="database"></i> 실시간 재고 관리</div>
       <div id="adminInventoryList"></div>
     </div>
-
     <div class="section-card">
       <div class="section-title"><i data-lucide="bell-ring"></i> 실시간 예약 승인 대기</div>
       <div id="adminResList"></div>
@@ -364,12 +349,10 @@
   </div>
 </div>
 
-<!-- ═══ RESERVE MODAL ═══ -->
 <div class="modal-overlay" id="reserveModal">
   <div class="modal-box">
     <div class="modal-title" id="modalItemName">물품 신청</div>
     <div class="modal-sub" id="modalItemSub">신청 정보를 꼼꼼히 확인해주세요.</div>
-
     <div class="modal-group">
       <label>이름 (실명)</label>
       <input type="text" id="modalName" placeholder="예: 홍길동">
@@ -386,7 +369,6 @@
       <label>대여 수령 시간 (14:00 ~ 17:30)</label>
       <select id="modalTime"></select>
     </div>
-
     <button class="btn-primary" onclick="window.submitReservation()">
       <i data-lucide="check-circle-2" style="width:20px;"></i> 예약 확정하기
     </button>
@@ -394,95 +376,49 @@
   </div>
 </div>
 
-<!-- ═══ RETURN MODAL ═══ -->
 <div class="modal-overlay" id="returnModal">
   <div class="modal-box" id="returnModalBox" style="text-align:center;"></div>
 </div>
 
 <div class="toast" id="toast"></div>
 
-<!-- 🚨 여기서부터 Firebase 데이터베이스 실시간 연동 로직입니다 🚨 -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-  import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-  import { getFirestore, collection, addDoc, onSnapshot, updateDoc, doc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-  // 🔴 중요: 아래 firebaseConfig 부분은 테스트를 위해 임시 공용 서버로 세팅해두었습니다.
-  // 실제 런칭 시에는 팀의 파이어베이스 키값으로 교체해야 보안이 유지됩니다!
-  let firebaseConfig = {
-    apiKey: "AIzaSy_TEMPORARY_TEST_KEY_REPLACE_LATER",
-    authDomain: "skku-rental-test.firebaseapp.com",
-    projectId: "skku-rental-test"
-  };
-  
-  // (개발자 전용) 캔버스 환경 자동 세팅
-  if (typeof __firebase_config !== 'undefined') {
-      firebaseConfig = JSON.parse(__firebase_config);
-  }
-
-  // Firebase 초기화
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
-  const appId = typeof __app_id !== 'undefined' ? __app_id : 'skku_rent';
-
+<!-- 🚨 LocalStorage (브라우저 메모리) 기반 데이터 연동 로직 🚨 -->
+<script>
   const ADMIN_CODE = 'admin10';
   const STUDENT_REGEX = /^\d{10}$/;
   const ADMIN_PHONE_NUMBER = "01085359187"; 
 
-  // 전역 상태 변수
-  let currentUser = null;
-  let uniqueUsersCount = 0;
-  let selectedItem = null;
-  let activeReturnId = null;
-
-  // 로컬 초기 재고 데이터 (DB에서 덮어씌워짐)
-  let dbInventory = {
+  // 기본 세팅 데이터
+  const defaultInventory = {
     charger:  { name: '충전기',       icon: 'plug-2',       sub: 'C타입 / 8핀',  stock: 5 },
     umbrella: { name: '우산',         icon: 'umbrella',     sub: '우천 대비',    stock: 4 },
     calc_gen: { name: '일반 계산기',   icon: 'calculator',   sub: '수업 및 시험용', stock: 3 },
     calc_fin: { name: '재무 계산기',   icon: 'bar-chart-2',  sub: '재무관리용',   stock: 2 },
   };
-  let dbReservations = [];
 
-  // 익명 로그인으로 실시간 DB 접근 권한 획득
-  signInAnonymously(auth);
+  // 로컬 스토리지에서 데이터 불러오기 (없으면 기본값)
+  let dbInventory = JSON.parse(localStorage.getItem('skku_inv')) || defaultInventory;
+  let dbReservations = JSON.parse(localStorage.getItem('skku_res')) || [];
+  let uniqueUsers = new Set(JSON.parse(localStorage.getItem('skku_users')) || []);
 
-  onAuthStateChanged(auth, (user) => {
-    if (user) setupListeners();
-  });
+  let currentUser = null;
+  let selectedItem = null;
+  let activeReturnId = null;
 
-  // DB 실시간 감시 (리스너) 세팅
-  function setupListeners() {
-    // 1. 예약 현황 실시간 감시
-    onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'reservations'), (snap) => {
-      dbReservations = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      // 시간순 정렬
-      dbReservations.sort((a, b) => b.createdAt - a.createdAt); 
-      
-      if(currentUser === 'admin') refreshAdmin();
-      else if(currentUser) renderMyReservations();
-    }, (err) => console.log(err));
-
-    // 2. 재고 현황 실시간 감시
-    onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'inventory'), (snap) => {
-      snap.docs.forEach(doc => {
-        if(dbInventory[doc.id]) {
-          dbInventory[doc.id].stock = doc.data().stock;
-        }
-      });
-      renderItems();
-      if(currentUser === 'admin') refreshAdmin();
-    }, (err) => console.log(err));
-
-    // 3. 누적 방문자 수 실시간 감시
-    onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'logins'), (snap) => {
-      uniqueUsersCount = snap.docs.length;
-      if(currentUser === 'admin') document.getElementById('statLogin').innerText = uniqueUsersCount;
-    }, (err) => console.log(err));
+  // 데이터 저장 함수
+  function saveData() {
+    localStorage.setItem('skku_inv', JSON.stringify(dbInventory));
+    localStorage.setItem('skku_res', JSON.stringify(dbReservations));
+    localStorage.setItem('skku_users', JSON.stringify([...uniqueUsers]));
   }
 
-  /* ── 뷰 및 유틸리티 함수 ── */
+  // 탭 간 실시간 데이터 동기화 (마법의 로직!)
+  window.addEventListener('storage', (e) => {
+    if(e.key === 'skku_inv') { dbInventory = JSON.parse(e.newValue); renderItems(); if(currentUser==='admin') refreshAdmin(); }
+    if(e.key === 'skku_res') { dbReservations = JSON.parse(e.newValue); if(currentUser==='admin') refreshAdmin(); else renderMyReservations(); }
+    if(e.key === 'skku_users') { uniqueUsers = new Set(JSON.parse(e.newValue)); if(currentUser==='admin') refreshAdmin(); }
+  });
+
   const OP_START_H = 14, OP_START_M = 0;
   const OP_END_H   = 17, OP_END_M   = 30;
 
@@ -530,7 +466,6 @@
     setTimeout(() => t.classList.remove('show'), 3500); 
   }
 
-  // 화면 렌더링 함수들
   function renderItems() {
     const grid = document.getElementById('itemsGrid');
     grid.innerHTML = '';
@@ -555,7 +490,7 @@
       container.innerHTML = `<div style="text-align:center; padding: 40px 20px; color:var(--text-muted); font-size:14px; font-weight:600;">현재 대여/예약 중인 내역이 없습니다.</div>`;
       return;
     }
-    container.innerHTML = mine.map(r => `
+    container.innerHTML = [...mine].map(r => `
       <div class="res-item">
         <div class="res-info">
           <div class="icon-box"><i data-lucide="${r.itemIcon}"></i></div>
@@ -574,7 +509,7 @@
   }
 
   function refreshAdmin() {
-    document.getElementById('statLogin').innerText = uniqueUsersCount;
+    document.getElementById('statLogin').innerText = uniqueUsers.size;
     const pendingList = dbReservations.filter(r => r.status === 'pending');
     document.getElementById('statPending').innerText = pendingList.length;
 
@@ -610,11 +545,8 @@
     lucide.createIcons();
   }
 
-
-  /* ── 전역(Global) 이벤트 바인딩 ── */
-  
-  // 1. 로그인
-  window.doLogin = async () => {
+  // --- 이벤트 함수들 ---
+  window.doLogin = () => {
     const val = document.getElementById('loginInput').value.trim();
     const err = document.getElementById('loginError');
 
@@ -624,13 +556,8 @@
       refreshAdmin();
     } else if (STUDENT_REGEX.test(val)) {
       currentUser = val;
-      
-      // DB에 누적 로그인 사용자 기록
-      try {
-        await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'logins', val), {
-          lastLogin: Date.now()
-        }, { merge: true });
-      } catch(e) {}
+      uniqueUsers.add(val);
+      saveData(); // 방문자 추가 저장
 
       document.getElementById('userGreeting').innerHTML = `<strong style="color:var(--skku-green);">${val}</strong> 학우님`;
       document.getElementById('modalStudentId').value = val;
@@ -649,7 +576,6 @@
     showScreen('loginScreen');
   };
 
-  // 2. 예약 프로세스
   window.openReserveModal = (key) => {
     selectedItem = key;
     const item = dbInventory[key];
@@ -684,7 +610,7 @@
 
   window.closeModal = (id) => document.getElementById(id).classList.remove('open');
 
-  window.submitReservation = async () => {
+  window.submitReservation = () => {
     const name = document.getElementById('modalName').value.trim();
     const date = document.getElementById('modalDate').value;
     const time = document.getElementById('modalTime').value;
@@ -693,40 +619,37 @@
     if (!time) return showToast('예약 가능한 시간이 없습니다.');
     if (dbInventory[selectedItem].stock <= 0) return showToast('품절된 물품입니다.');
 
-    // DB: 재고 차감
-    const newStock = dbInventory[selectedItem].stock - 1;
-    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'inventory', selectedItem), { stock: newStock });
+    dbInventory[selectedItem].stock -= 1;
 
-    // DB: 예약 등록
     const [y, m, d] = date.split('-');
     const dateObj = new Date(+y, +m-1, +d);
-    const dateLabel = formatDateLabel(dateObj);
-    const itemName = dbInventory[selectedItem].name;
-    const itemIcon = dbInventory[selectedItem].icon;
-
-    await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'reservations'), {
+    
+    dbReservations.unshift({ // 최신 예약이 위로 오도록 배열 맨 앞에 추가
+      id: Date.now().toString(),
       studentId: currentUser,
       itemKey: selectedItem,
-      itemName: itemName,
-      itemIcon: itemIcon,
-      name: name, date: date, dateLabel: dateLabel, time: time,
-      status: 'pending',
-      createdAt: Date.now()
+      itemName: dbInventory[selectedItem].name,
+      itemIcon: dbInventory[selectedItem].icon,
+      name: name, date: date, dateLabel: formatDateLabel(dateObj), time: time,
+      status: 'pending'
     });
+
+    saveData(); // 예약 정보 저장
 
     window.closeModal('reserveModal');
     showToast('예약 접수! 1초 뒤 문자 앱에서 전송을 눌러주세요.');
     
-    // SMS 전송
-    const smsMessage = `[SKKU 긴급대여 예약알림]\n- 학번: ${currentUser}\n- 이름: ${name}\n- 물품: ${itemName}\n- 수령예정: ${dateLabel} ${time}`;
+    const smsMessage = `[SKKU 긴급대여 예약알림]\n- 학번: ${currentUser}\n- 이름: ${name}\n- 물품: ${dbInventory[selectedItem].name}\n- 수령예정: ${formatDateLabel(dateObj)} ${time}`;
     setTimeout(() => {
       const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
       const separator = isIOS ? '&' : '?';
       window.location.href = `sms:${ADMIN_PHONE_NUMBER}${separator}body=${encodeURIComponent(smsMessage)}`;
     }, 1500);
+
+    renderItems();
+    renderMyReservations();
   };
 
-  // 3. 반납 프로세스
   window.openReturnModal = (id, itemKey) => {
     activeReturnId = { id, itemKey };
     const modalBox = document.getElementById('returnModalBox');
@@ -762,32 +685,39 @@
     if (box) box.querySelector('.upload-text').textContent = '✅ ' + file.name;
   };
 
-  window.submitReturn = async () => {
+  window.submitReturn = () => {
     const fileInput = document.getElementById('returnPhotoInput');
     if (!fileInput || !fileInput.files[0]) return showToast('반납 인증 사진을 첨부해주세요.');
 
-    // DB 업데이트: 상태 변경 및 재고 증가
-    await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'reservations', activeReturnId.id), { status: 'returned' });
-    const newStock = dbInventory[activeReturnId.itemKey].stock + 1;
-    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'inventory', activeReturnId.itemKey), { stock: newStock });
+    const res = dbReservations.find(r => r.id === activeReturnId.id);
+    if (res) res.status = 'returned';
+    dbInventory[activeReturnId.itemKey].stock += 1;
+    
+    saveData(); // 반납 완료 데이터 저장
 
     window.closeModal('returnModal');
     showToast('반납 완료! 이용해 주셔서 감사합니다 😊');
+    renderMyReservations();
+    renderItems();
   };
 
-  // 4. 관리자 컨트롤 프로세스
-  window.updateStock = async (key, delta) => {
+  window.updateStock = (key, delta) => {
     const newVal = dbInventory[key].stock + delta;
     if (newVal < 0 || newVal > 99) return; 
-    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'inventory', key), { stock: newVal });
+    dbInventory[key].stock = newVal;
+    saveData();
+    refreshAdmin();
   };
 
-  window.confirmRes = async (id) => {
-    await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'reservations', id), { status: 'confirmed' });
+  window.confirmRes = (id) => {
+    const res = dbReservations.find(r => r.id === id);
+    if (res) res.status = 'confirmed';
+    saveData();
     showToast('대여 승인이 완료되었습니다.');
+    refreshAdmin();
   };
 
-  // 초기 렌더링
+  // 앱 로드 시 최초 아이콘 렌더링
   window.onload = () => lucide.createIcons();
 </script>
 </body>
