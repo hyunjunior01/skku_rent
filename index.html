@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -13,7 +12,6 @@
     --skku-green: #003E38; 
     --skku-green-dark: #002B27;
     --skku-gold: #D4AF37; 
-    --skku-gold-light: #F2DE94;
     --light-bg: #F5F7F6;
     --white: #FFFFFF;
     --text-main: #1A1A1A;
@@ -61,7 +59,6 @@
   }
 
   .login-logo { margin-bottom: 30px; }
-  
   .login-logo .badge {
     display: inline-block; background: rgba(212, 175, 55, 0.1);
     color: var(--skku-green); font-size: 13px; font-weight: 900;
@@ -122,7 +119,6 @@
     border-radius: 20px; font-size: 13px; font-weight: 700; cursor: pointer;
     transition: 0.2s;
   }
-  .btn-logout:hover { background: var(--border-color); }
 
   /* ── CONTENT ── */
   .content-area {
@@ -152,7 +148,6 @@
     background: var(--white); border: 2px solid var(--border-color);
     border-radius: 20px; padding: 28px 16px; text-align: center; cursor: pointer;
     transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-    position: relative; overflow: hidden;
   }
   .item-card:hover { border-color: var(--skku-gold); transform: translateY(-5px); box-shadow: var(--shadow-premium); }
   .item-card.empty { opacity: 0.6; cursor: not-allowed; background: var(--light-bg); border-color: var(--border-color);}
@@ -196,7 +191,6 @@
     background: var(--skku-green); color: var(--white);
     border: none; padding: 8px 16px; border-radius: 10px;
     font-size: 13px; font-weight: 800; cursor: pointer;
-    white-space: nowrap; transition: 0.2s;
   }
 
   /* ── ADMIN UI ── */
@@ -208,7 +202,6 @@
   .stat-card .num { font-size: 36px; font-weight: 900; color: var(--skku-green); }
   .stat-card.gold .num { color: var(--white); }
 
-  /* 관리자 재고 관리 UI */
   .admin-inv-row {
     display: flex; justify-content: space-between; align-items: center;
     padding: 16px 0; border-bottom: 1px solid var(--border-color);
@@ -223,7 +216,6 @@
     background: var(--white); font-size: 18px; font-weight: bold; color: var(--skku-green);
     cursor: pointer; display: flex; align-items: center; justify-content: center;
   }
-  .btn-inv:active { background: var(--light-bg); }
   .inv-count { font-size: 18px; font-weight: 800; min-width: 24px; text-align: center; }
 
   /* ── MODALS ── */
@@ -283,10 +275,10 @@
     <div class="login-input-group">
       <label>학번 입력</label>
       <input type="text" id="loginInput" placeholder="예: 2024123456" maxlength="20"
-        onkeydown="if(event.key==='Enter') doLogin()" inputmode="numeric">
+        onkeydown="if(event.key==='Enter') window.doLogin()" inputmode="numeric">
     </div>
 
-    <button class="btn-primary" onclick="doLogin()">
+    <button class="btn-primary" onclick="window.doLogin()">
       <i data-lucide="log-in" style="width:20px; height:20px;"></i> 시작하기
     </button>
     <div class="login-error" id="loginError">유효한 학번(10자리 숫자)을 입력해주세요.</div>
@@ -300,12 +292,10 @@
       <h2>재고현황 및 신청</h2>
       <p id="userGreeting">환영합니다</p>
     </div>
-    <button class="btn-logout" onclick="logout()">로그아웃</button>
+    <button class="btn-logout" onclick="window.logout()">로그아웃</button>
   </div>
 
   <div class="content-area">
-    
-    <!-- 도서관 정보 -->
     <div class="section-card" style="padding: 24px;">
       <div class="section-title" style="margin-bottom:16px;"><i data-lucide="library"></i> 중앙학술정보관 안내</div>
       <div class="info-grid">
@@ -320,7 +310,6 @@
       </div>
     </div>
 
-    <!-- 대여 물품 목록 -->
     <div class="section-card">
       <div class="section-title"><i data-lucide="package"></i> 경영관 필로티 대여 부스</div>
       <p style="font-size:13px; color:var(--text-muted); margin-bottom:8px; font-weight:600;">
@@ -330,7 +319,6 @@
       <div class="items-grid" id="itemsGrid"></div>
     </div>
 
-    <!-- 예약 현황 -->
     <div class="section-card">
       <div class="section-title"><i data-lucide="clipboard-list"></i> 나의 예약 현황</div>
       <div id="myReservations">
@@ -349,7 +337,7 @@
       <h2>⚙️ 관리자 대시보드</h2>
       <p>경영관 필로티 부스 통합 관리</p>
     </div>
-    <button class="btn-logout" onclick="logout()">로그아웃</button>
+    <button class="btn-logout" onclick="window.logout()">로그아웃</button>
   </div>
   
   <div class="content-area">
@@ -364,7 +352,6 @@
       </div>
     </div>
 
-    <!-- ✨ 관리자 재고 제어 기능 ✨ -->
     <div class="section-card">
       <div class="section-title"><i data-lucide="database"></i> 실시간 재고 관리</div>
       <div id="adminInventoryList"></div>
@@ -400,10 +387,10 @@
       <select id="modalTime"></select>
     </div>
 
-    <button class="btn-primary" onclick="submitReservation()">
+    <button class="btn-primary" onclick="window.submitReservation()">
       <i data-lucide="check-circle-2" style="width:20px;"></i> 예약 확정하기
     </button>
-    <button class="btn-cancel" onclick="closeModal('reserveModal')">취소</button>
+    <button class="btn-cancel" onclick="window.closeModal('reserveModal')">취소</button>
   </div>
 </div>
 
@@ -412,366 +399,396 @@
   <div class="modal-box" id="returnModalBox" style="text-align:center;"></div>
 </div>
 
-<!-- ═══ TOAST ═══ -->
 <div class="toast" id="toast"></div>
 
-<script>
-// ═══════════════════════════════
-//  STATE & DATA
-// ═══════════════════════════════
-const ADMIN_CODE = 'admin10';
-const STUDENT_REGEX = /^\d{10}$/;
+<!-- 🚨 여기서부터 Firebase 데이터베이스 실시간 연동 로직입니다 🚨 -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+  import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+  import { getFirestore, collection, addDoc, onSnapshot, updateDoc, doc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-let currentUser = null;
-let uniqueUsers = new Set(); // 고유 방문자 수 추적
-
-let selectedItem = null;
-let activeReturnId = null;
-
-// 관리자 연락처 (문자 연동용)
-const ADMIN_PHONE_NUMBER = "01085359187"; 
-
-// ✨ 품목 최적화 & 고급 아이콘 적용 ✨
-const inventory = {
-  charger:  { name: '충전기',       icon: 'plug-2',       sub: 'C타입 / 8핀',  stock: 5 },
-  umbrella: { name: '우산',         icon: 'umbrella',     sub: '우천 대비',    stock: 4 },
-  calc_gen: { name: '일반 계산기',   icon: 'calculator',   sub: '수업 및 시험용', stock: 3 },
-  calc_fin: { name: '재무 계산기',   icon: 'bar-chart-2',  sub: '재무관리용',   stock: 2 },
-};
-
-let reservations = [];
-
-// ═══════════════════════════════
-//  DATE/TIME HELPERS
-// ═══════════════════════════════
-const OP_START_H = 14, OP_START_M = 0;
-const OP_END_H   = 17, OP_END_M   = 30;
-
-function nowKST() { return new Date(); }
-function formatDateLabel(d) { const days = ['일','월','화','수','목','금','토']; return `${d.getMonth()+1}월 ${d.getDate()}일(${days[d.getDay()]})`; }
-function formatDateValue(d) { const y = d.getFullYear(); const m = String(d.getMonth()+1).padStart(2,'0'); const dd = String(d.getDate()).padStart(2,'0'); return `${y}-${m}-${dd}`; }
-
-function buildTimeOptions(selectedDateValue) {
-  const now = nowKST();
-  const todayValue = formatDateValue(now);
-  const select = document.getElementById('modalTime');
-  select.innerHTML = '';
-
-  let minH, minM;
-  if (selectedDateValue === todayValue) {
-    const plus15 = new Date(now.getTime() + 15 * 60000);
-    minH = plus15.getHours(); minM = plus15.getMinutes();
-    const rem = minM % 5; if (rem !== 0) { minM += (5 - rem); }
-    if (minM >= 60) { minH += Math.floor(minM/60); minM %= 60; }
-  } else { minH = OP_START_H; minM = OP_START_M; }
-
-  if (minH < OP_START_H || (minH === OP_START_H && minM < OP_START_M)) { minH = OP_START_H; minM = OP_START_M; }
-
-  const afterEnd = minH > OP_END_H || (minH === OP_END_H && minM > OP_END_M);
-  if (afterEnd) { select.innerHTML = '<option value="">예약 가능 시간 없음</option>'; select.disabled = true; return; }
-
-  select.disabled = false;
-  let curH = minH, curM = minM;
-  while (curH < OP_END_H || (curH === OP_END_H && curM <= OP_END_M)) {
-    const hh = String(curH).padStart(2,'0'); const mm = String(curM).padStart(2,'0');
-    select.innerHTML += `<option value="${hh}:${mm}">${hh}:${mm}</option>`;
-    curM += 5; if (curM >= 60) { curH++; curM -= 60; }
+  // 🔴 중요: 아래 firebaseConfig 부분은 테스트를 위해 임시 공용 서버로 세팅해두었습니다.
+  // 실제 런칭 시에는 팀의 파이어베이스 키값으로 교체해야 보안이 유지됩니다!
+  let firebaseConfig = {
+    apiKey: "AIzaSy_TEMPORARY_TEST_KEY_REPLACE_LATER",
+    authDomain: "skku-rental-test.firebaseapp.com",
+    projectId: "skku-rental-test"
+  };
+  
+  // (개발자 전용) 캔버스 환경 자동 세팅
+  if (typeof __firebase_config !== 'undefined') {
+      firebaseConfig = JSON.parse(__firebase_config);
   }
-}
 
-// ═══════════════════════════════
-//  AUTH
-// ═══════════════════════════════
-function doLogin() {
-  const val = document.getElementById('loginInput').value.trim();
-  const err = document.getElementById('loginError');
+  // Firebase 초기화
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  const appId = typeof __app_id !== 'undefined' ? __app_id : 'skku_rent';
 
-  if (val === ADMIN_CODE) {
-    currentUser = 'admin';
-    showScreen('adminScreen');
-    refreshAdmin();
-  } else if (STUDENT_REGEX.test(val)) {
-    currentUser = val;
-    uniqueUsers.add(val); 
-    document.getElementById('userGreeting').innerHTML = `<strong style="color:var(--skku-green);">${val}</strong> 학우님`;
-    document.getElementById('modalStudentId').value = val;
-    showScreen('userScreen');
-    renderItems();
-    renderMyReservations();
-  } else {
-    err.style.display = 'block';
-    setTimeout(() => err.style.display = 'none', 3000);
-  }
-}
+  const ADMIN_CODE = 'admin10';
+  const STUDENT_REGEX = /^\d{10}$/;
+  const ADMIN_PHONE_NUMBER = "01085359187"; 
 
-function logout() {
-  currentUser = null;
-  document.getElementById('loginInput').value = '';
-  showScreen('loginScreen');
-}
+  // 전역 상태 변수
+  let currentUser = null;
+  let uniqueUsersCount = 0;
+  let selectedItem = null;
+  let activeReturnId = null;
 
-function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  window.scrollTo(0, 0);
-  lucide.createIcons(); // 화면 전환 시 아이콘 렌더링 갱신
-}
+  // 로컬 초기 재고 데이터 (DB에서 덮어씌워짐)
+  let dbInventory = {
+    charger:  { name: '충전기',       icon: 'plug-2',       sub: 'C타입 / 8핀',  stock: 5 },
+    umbrella: { name: '우산',         icon: 'umbrella',     sub: '우천 대비',    stock: 4 },
+    calc_gen: { name: '일반 계산기',   icon: 'calculator',   sub: '수업 및 시험용', stock: 3 },
+    calc_fin: { name: '재무 계산기',   icon: 'bar-chart-2',  sub: '재무관리용',   stock: 2 },
+  };
+  let dbReservations = [];
 
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3500); 
-}
+  // 익명 로그인으로 실시간 DB 접근 권한 획득
+  signInAnonymously(auth);
 
-// ═══════════════════════════════
-//  ITEM RENDER
-// ═══════════════════════════════
-function renderItems() {
-  const grid = document.getElementById('itemsGrid');
-  grid.innerHTML = '';
-  Object.entries(inventory).forEach(([key, item]) => {
-    const isOut = item.stock <= 0;
-    grid.innerHTML += `
-      <div class="item-card ${isOut ? 'empty' : ''}" onclick="${isOut ? '' : `openReserveModal('${key}')`}">
-        <div class="item-icon"><i data-lucide="${item.icon}" style="width:28px; height:28px;"></i></div>
-        <div class="item-name">${item.name}</div>
-        <div class="item-sub">${item.sub}</div>
-        <span class="stock-badge ${isOut ? 'none' : ''}">${isOut ? '품절' : `잔여 ${item.stock}개`}</span>
-      </div>`;
-  });
-  lucide.createIcons();
-}
-
-// ═══════════════════════════════
-//  RESERVE MODAL & SMS LOGIC
-// ═══════════════════════════════
-function openReserveModal(key) {
-  selectedItem = key;
-  const item = inventory[key];
-  document.getElementById('modalItemName').textContent = `${item.name} 신청`;
-  document.getElementById('modalName').value = '';
-
-  const now = nowKST();
-  const todayValue = formatDateValue(now);
-  const tomorrow = new Date(now); tomorrow.setDate(now.getDate()+1);
-  const tomorrowValue = formatDateValue(tomorrow);
-
-  const dateSelect = document.getElementById('modalDate');
-  dateSelect.innerHTML = '';
-
-  const isAfterOpEnd = now.getHours() > OP_END_H || (now.getHours() === OP_END_H && now.getMinutes() > OP_END_M);
-
-  if (!isAfterOpEnd) {
-    const plus15 = new Date(now.getTime() + 15*60000);
-    let ph = plus15.getHours(), pm = plus15.getMinutes();
-    const rem = pm % 5; if (rem) { pm += 5-rem; } if (pm>=60){ph++;pm-=60;}
-    const todayHasSlot = !(ph > OP_END_H || (ph === OP_END_H && pm > OP_END_M));
-
-    if (todayHasSlot) { dateSelect.innerHTML += `<option value="${todayValue}">오늘 (${formatDateLabel(now)})</option>`; }
-    dateSelect.innerHTML += `<option value="${tomorrowValue}">내일 (${formatDateLabel(tomorrow)})</option>`;
-  } else { dateSelect.innerHTML = `<option value="${tomorrowValue}">내일 (${formatDateLabel(tomorrow)})</option>`; }
-
-  buildTimeOptions(dateSelect.value);
-  dateSelect.onchange = () => buildTimeOptions(dateSelect.value);
-
-  document.getElementById('reserveModal').classList.add('open');
-}
-
-function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-
-function submitReservation() {
-  const name = document.getElementById('modalName').value.trim();
-  const date = document.getElementById('modalDate').value;
-  const time = document.getElementById('modalTime').value;
-
-  if (!name) { showToast('이름을 입력해주세요.'); return; }
-  if (!time || time === '') { showToast('예약 가능한 시간이 없습니다.'); return; }
-  if (inventory[selectedItem].stock <= 0) { showToast('품절된 물품입니다.'); return; }
-
-  inventory[selectedItem].stock--;
-
-  const [y, m, d] = date.split('-');
-  const dateObj = new Date(+y, +m-1, +d);
-  const dateLabel = formatDateLabel(dateObj);
-  const itemName = inventory[selectedItem].name;
-  const itemIcon = inventory[selectedItem].icon;
-
-  reservations.push({
-    id: Date.now(),
-    studentId: currentUser,
-    itemKey: selectedItem,
-    itemName: itemName,
-    itemIcon: itemIcon,
-    name, date, dateLabel, time,
-    status: 'pending'
+  onAuthStateChanged(auth, (user) => {
+    if (user) setupListeners();
   });
 
-  closeModal('reserveModal');
-  
-  showToast('예약이 접수되었습니다! 1초 뒤 열리는 문자 앱에서 전송 버튼을 눌러주세요.');
-  
-  const smsMessage = `[SKKU 긴급대여 예약알림]\n- 학번: ${currentUser}\n- 이름: ${name}\n- 물품: ${itemName}\n- 수령예정: ${dateLabel} ${time}`;
-  
-  setTimeout(() => {
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-    const separator = isIOS ? '&' : '?';
-    window.location.href = `sms:${ADMIN_PHONE_NUMBER}${separator}body=${encodeURIComponent(smsMessage)}`;
-  }, 1500);
+  // DB 실시간 감시 (리스너) 세팅
+  function setupListeners() {
+    // 1. 예약 현황 실시간 감시
+    onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'reservations'), (snap) => {
+      dbReservations = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      // 시간순 정렬
+      dbReservations.sort((a, b) => b.createdAt - a.createdAt); 
+      
+      if(currentUser === 'admin') refreshAdmin();
+      else if(currentUser) renderMyReservations();
+    }, (err) => console.log(err));
 
-  renderItems();
-  renderMyReservations();
-}
+    // 2. 재고 현황 실시간 감시
+    onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'inventory'), (snap) => {
+      snap.docs.forEach(doc => {
+        if(dbInventory[doc.id]) {
+          dbInventory[doc.id].stock = doc.data().stock;
+        }
+      });
+      renderItems();
+      if(currentUser === 'admin') refreshAdmin();
+    }, (err) => console.log(err));
 
-// ═══════════════════════════════
-//  MY RESERVATIONS
-// ═══════════════════════════════
-function renderMyReservations() {
-  const container = document.getElementById('myReservations');
-  const mine = reservations.filter(r => r.studentId === currentUser && r.status !== 'returned');
-
-  if (mine.length === 0) {
-    container.innerHTML = `<div style="text-align:center; padding: 40px 20px; color:var(--text-muted); font-size:14px; font-weight:600;">현재 대여/예약 중인 내역이 없습니다.</div>`;
-    return;
+    // 3. 누적 방문자 수 실시간 감시
+    onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'logins'), (snap) => {
+      uniqueUsersCount = snap.docs.length;
+      if(currentUser === 'admin') document.getElementById('statLogin').innerText = uniqueUsersCount;
+    }, (err) => console.log(err));
   }
 
-  container.innerHTML = [...mine].reverse().map(r => `
-    <div class="res-item">
-      <div class="res-info">
-        <div class="icon-box"><i data-lucide="${r.itemIcon}"></i></div>
-        <div class="details">
-          <h4>${r.itemName}</h4>
-          <p>${r.dateLabel} <strong>${r.time}</strong></p>
+  /* ── 뷰 및 유틸리티 함수 ── */
+  const OP_START_H = 14, OP_START_M = 0;
+  const OP_END_H   = 17, OP_END_M   = 30;
+
+  function nowKST() { return new Date(); }
+  function formatDateLabel(d) { const days = ['일','월','화','수','목','금','토']; return `${d.getMonth()+1}월 ${d.getDate()}일(${days[d.getDay()]})`; }
+  function formatDateValue(d) { const y = d.getFullYear(); const m = String(d.getMonth()+1).padStart(2,'0'); const dd = String(d.getDate()).padStart(2,'0'); return `${y}-${m}-${dd}`; }
+
+  function buildTimeOptions(selectedDateValue) {
+    const now = nowKST();
+    const todayValue = formatDateValue(now);
+    const select = document.getElementById('modalTime');
+    select.innerHTML = '';
+
+    let minH, minM;
+    if (selectedDateValue === todayValue) {
+      const plus15 = new Date(now.getTime() + 15 * 60000);
+      minH = plus15.getHours(); minM = plus15.getMinutes();
+      const rem = minM % 5; if (rem !== 0) { minM += (5 - rem); }
+      if (minM >= 60) { minH += Math.floor(minM/60); minM %= 60; }
+    } else { minH = OP_START_H; minM = OP_START_M; }
+
+    if (minH < OP_START_H || (minH === OP_START_H && minM < OP_START_M)) { minH = OP_START_H; minM = OP_START_M; }
+    const afterEnd = minH > OP_END_H || (minH === OP_END_H && minM > OP_END_M);
+    if (afterEnd) { select.innerHTML = '<option value="">예약 가능 시간 없음</option>'; select.disabled = true; return; }
+
+    select.disabled = false;
+    let curH = minH, curM = minM;
+    while (curH < OP_END_H || (curH === OP_END_H && curM <= OP_END_M)) {
+      const hh = String(curH).padStart(2,'0'); const mm = String(curM).padStart(2,'0');
+      select.innerHTML += `<option value="${hh}:${mm}">${hh}:${mm}</option>`;
+      curM += 5; if (curM >= 60) { curH++; curM -= 60; }
+    }
+  }
+
+  function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    window.scrollTo(0, 0);
+    lucide.createIcons();
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3500); 
+  }
+
+  // 화면 렌더링 함수들
+  function renderItems() {
+    const grid = document.getElementById('itemsGrid');
+    grid.innerHTML = '';
+    Object.entries(dbInventory).forEach(([key, item]) => {
+      const isOut = item.stock <= 0;
+      grid.innerHTML += `
+        <div class="item-card ${isOut ? 'empty' : ''}" onclick="${isOut ? '' : `window.openReserveModal('${key}')`}">
+          <div class="item-icon"><i data-lucide="${item.icon}" style="width:28px; height:28px;"></i></div>
+          <div class="item-name">${item.name}</div>
+          <div class="item-sub">${item.sub}</div>
+          <span class="stock-badge ${isOut ? 'none' : ''}">${isOut ? '품절' : `잔여 ${item.stock}개`}</span>
+        </div>`;
+    });
+    lucide.createIcons();
+  }
+
+  function renderMyReservations() {
+    const container = document.getElementById('myReservations');
+    const mine = dbReservations.filter(r => r.studentId === currentUser && r.status !== 'returned');
+
+    if (mine.length === 0) {
+      container.innerHTML = `<div style="text-align:center; padding: 40px 20px; color:var(--text-muted); font-size:14px; font-weight:600;">현재 대여/예약 중인 내역이 없습니다.</div>`;
+      return;
+    }
+    container.innerHTML = mine.map(r => `
+      <div class="res-item">
+        <div class="res-info">
+          <div class="icon-box"><i data-lucide="${r.itemIcon}"></i></div>
+          <div class="details">
+            <h4>${r.itemName}</h4>
+            <p>${r.dateLabel} <strong>${r.time}</strong></p>
+          </div>
         </div>
-      </div>
-      <div class="res-actions">
-        <span class="status-tag ${r.status}">${r.status === 'pending' ? '승인 대기중' : '대여중'}</span>
-        ${r.status === 'confirmed' ? `<button class="btn-return-action" onclick="openReturnModal(${r.id})">반납하기</button>` : ''}
-      </div>
-    </div>
-  `).join('');
-  lucide.createIcons();
-}
-
-// ═══════════════════════════════
-//  RETURN MODAL
-// ═══════════════════════════════
-function openReturnModal(id) {
-  activeReturnId = id;
-  const modalBox = document.getElementById('returnModalBox');
-
-  modalBox.innerHTML = `
-    <h3 style="color:var(--skku-green); margin-bottom:12px; font-size:22px; font-weight:900;">📸 무인 반납 인증</h3>
-    <p style="font-size:14px; color:var(--text-muted); margin-bottom:24px; line-height:1.6; font-weight:600;">
-      무인 반납함에 물품을 넣고 사진을 촬영해주세요.<br>
-      사진 첨부 후 반납 완료 버튼을 눌러주세요.
-    </p>
-
-    <div class="photo-upload-box" onclick="document.getElementById('returnPhotoInput').click()" style="border: 2px dashed var(--border-color); border-radius: 16px; padding: 30px; background: var(--light-bg); cursor:pointer;">
-      <input type="file" id="returnPhotoInput" accept="image/*" capture="environment" onchange="previewReturnPhoto(this)" style="display:none;">
-      <i data-lucide="camera" style="width:40px;height:40px; color:var(--text-muted); margin-bottom:10px;"></i>
-      <div class="upload-text" style="font-size:15px; font-weight:800;">사진을 선택하거나 촬영하기</div>
-    </div>
-    <img id="returnPhotoPreview" style="width: 100%; border-radius: 16px; margin-top: 16px; display: none; object-fit: cover; max-height:200px;">
-
-    <div style="margin-top:24px;">
-      <button class="btn-primary" onclick="submitReturn()">안전하게 반납 완료</button>
-      <button class="btn-cancel" onclick="closeModal('returnModal')">취소</button>
-    </div>
-  `;
-  document.getElementById('returnModal').classList.add('open');
-  lucide.createIcons();
-}
-
-function previewReturnPhoto(input) {
-  const file = input.files[0];
-  if (!file) return;
-  const preview = document.getElementById('returnPhotoPreview');
-  const reader = new FileReader();
-  reader.onload = e => { preview.src = e.target.result; preview.style.display = 'block'; };
-  reader.readAsDataURL(file);
-
-  const box = input.closest('.photo-upload-box') || document.querySelector('.photo-upload-box');
-  if (box) { box.querySelector('.upload-text').textContent = '✅ ' + file.name; }
-}
-
-function submitReturn() {
-  const fileInput = document.getElementById('returnPhotoInput');
-  if (!fileInput || !fileInput.files[0]) { showToast('반납 인증 사진을 첨부해주세요.'); return; }
-
-  const res = reservations.find(r => r.id === activeReturnId);
-  if (res) { res.status = 'returned'; inventory[res.itemKey].stock++; }
-
-  closeModal('returnModal');
-  showToast('반납 완료! 이용해 주셔서 감사합니다 😊');
-  renderMyReservations();
-  renderItems();
-}
-
-// ═══════════════════════════════
-//  ADMIN LOGIC (재고 컨트롤 포함)
-// ═══════════════════════════════
-function refreshAdmin() {
-  document.getElementById('statLogin').innerText = uniqueUsers.size;
-
-  const pendingList = reservations.filter(r => r.status === 'pending');
-  document.getElementById('statPending').innerText = pendingList.length;
-
-  const invContainer = document.getElementById('adminInventoryList');
-  invContainer.innerHTML = Object.entries(inventory).map(([key, item]) => `
-    <div class="admin-inv-row">
-      <div class="admin-inv-info">
-        <i data-lucide="${item.icon}" style="width:20px;height:20px;"></i>
-        <span>${item.name}</span>
-      </div>
-      <div class="admin-inv-controls">
-        <button class="btn-inv" onclick="updateStock('${key}', -1)">−</button>
-        <div class="inv-count">${item.stock}</div>
-        <button class="btn-inv" onclick="updateStock('${key}', 1)">+</button>
-      </div>
-    </div>
-  `).join('');
-
-  const resContainer = document.getElementById('adminResList');
-  if (pendingList.length === 0) {
-    resContainer.innerHTML = `<div style="text-align:center; padding: 30px 20px; color:var(--text-muted); font-size:14px; font-weight:600;">현재 승인 대기 중인 예약이 없습니다.</div>`;
-  } else {
-    resContainer.innerHTML = pendingList.map(r => `
-      <div class="res-item" style="flex-direction:column; align-items:flex-start; gap:16px;">
-        <div style="display:flex; justify-content:space-between; width:100%; border-bottom:2px solid var(--light-bg); padding-bottom:12px;">
-          <strong style="color:var(--skku-green); font-size:15px; font-weight:900;">${r.studentId} (${r.name})</strong>
-          <span style="font-size:13px; color:var(--text-muted); font-weight:800;">${r.dateLabel} ${r.time}</span>
+        <div class="res-actions">
+          <span class="status-tag ${r.status}">${r.status === 'pending' ? '승인 대기중' : '대여중'}</span>
+          ${r.status === 'confirmed' ? `<button class="btn-return-action" onclick="window.openReturnModal('${r.id}', '${r.itemKey}')">반납하기</button>` : ''}
         </div>
-        <div style="font-size:16px; font-weight:800; display:flex; align-items:center; gap:8px;">
-          <i data-lucide="${r.itemIcon}" style="width:20px;height:20px;color:var(--skku-gold);"></i> ${r.itemName}
-        </div>
-        <button class="btn-primary" style="padding:14px; font-size:14px;" onclick="confirmRes(${r.id})">물품 수령 확인 (대여 승인)</button>
       </div>
     `).join('');
+    lucide.createIcons();
   }
-  lucide.createIcons();
-}
 
-function updateStock(key, delta) {
-  const newVal = inventory[key].stock + delta;
-  if (newVal < 0 || newVal > 99) return; 
-  inventory[key].stock = newVal;
-  refreshAdmin(); 
-  renderItems();  
-}
+  function refreshAdmin() {
+    document.getElementById('statLogin').innerText = uniqueUsersCount;
+    const pendingList = dbReservations.filter(r => r.status === 'pending');
+    document.getElementById('statPending').innerText = pendingList.length;
 
-function confirmRes(id) {
-  const res = reservations.find(r => r.id === id);
-  if (res) {
-    res.status = 'confirmed';
-    showToast('정상적으로 대여 승인되었습니다.');
-    refreshAdmin();
+    const invContainer = document.getElementById('adminInventoryList');
+    invContainer.innerHTML = Object.entries(dbInventory).map(([key, item]) => `
+      <div class="admin-inv-row">
+        <div class="admin-inv-info"><i data-lucide="${item.icon}" style="width:20px;height:20px;"></i><span>${item.name}</span></div>
+        <div class="admin-inv-controls">
+          <button class="btn-inv" onclick="window.updateStock('${key}', -1)">−</button>
+          <div class="inv-count">${item.stock}</div>
+          <button class="btn-inv" onclick="window.updateStock('${key}', 1)">+</button>
+        </div>
+      </div>
+    `).join('');
+
+    const resContainer = document.getElementById('adminResList');
+    if (pendingList.length === 0) {
+      resContainer.innerHTML = `<div style="text-align:center; padding: 30px 20px; color:var(--text-muted); font-size:14px; font-weight:600;">현재 승인 대기 중인 예약이 없습니다.</div>`;
+    } else {
+      resContainer.innerHTML = pendingList.map(r => `
+        <div class="res-item" style="flex-direction:column; align-items:flex-start; gap:16px;">
+          <div style="display:flex; justify-content:space-between; width:100%; border-bottom:2px solid var(--light-bg); padding-bottom:12px;">
+            <strong style="color:var(--skku-green); font-size:15px; font-weight:900;">${r.studentId} (${r.name})</strong>
+            <span style="font-size:13px; color:var(--text-muted); font-weight:800;">${r.dateLabel} ${r.time}</span>
+          </div>
+          <div style="font-size:16px; font-weight:800; display:flex; align-items:center; gap:8px;">
+            <i data-lucide="${r.itemIcon}" style="width:20px;height:20px;color:var(--skku-gold);"></i> ${r.itemName}
+          </div>
+          <button class="btn-primary" style="padding:14px; font-size:14px;" onclick="window.confirmRes('${r.id}')">물품 수령 확인 (대여 승인)</button>
+        </div>
+      `).join('');
+    }
+    lucide.createIcons();
   }
-}
 
-window.onload = () => { lucide.createIcons(); }
+
+  /* ── 전역(Global) 이벤트 바인딩 ── */
+  
+  // 1. 로그인
+  window.doLogin = async () => {
+    const val = document.getElementById('loginInput').value.trim();
+    const err = document.getElementById('loginError');
+
+    if (val === ADMIN_CODE) {
+      currentUser = 'admin';
+      showScreen('adminScreen');
+      refreshAdmin();
+    } else if (STUDENT_REGEX.test(val)) {
+      currentUser = val;
+      
+      // DB에 누적 로그인 사용자 기록
+      try {
+        await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'logins', val), {
+          lastLogin: Date.now()
+        }, { merge: true });
+      } catch(e) {}
+
+      document.getElementById('userGreeting').innerHTML = `<strong style="color:var(--skku-green);">${val}</strong> 학우님`;
+      document.getElementById('modalStudentId').value = val;
+      showScreen('userScreen');
+      renderItems();
+      renderMyReservations();
+    } else {
+      err.style.display = 'block';
+      setTimeout(() => err.style.display = 'none', 3000);
+    }
+  };
+
+  window.logout = () => {
+    currentUser = null;
+    document.getElementById('loginInput').value = '';
+    showScreen('loginScreen');
+  };
+
+  // 2. 예약 프로세스
+  window.openReserveModal = (key) => {
+    selectedItem = key;
+    const item = dbInventory[key];
+    document.getElementById('modalItemName').textContent = `${item.name} 신청`;
+    document.getElementById('modalName').value = '';
+
+    const now = nowKST();
+    const todayValue = formatDateValue(now);
+    const tomorrow = new Date(now); tomorrow.setDate(now.getDate()+1);
+    const tomorrowValue = formatDateValue(tomorrow);
+
+    const dateSelect = document.getElementById('modalDate');
+    dateSelect.innerHTML = '';
+    const isAfterOpEnd = now.getHours() > OP_END_H || (now.getHours() === OP_END_H && now.getMinutes() > OP_END_M);
+
+    if (!isAfterOpEnd) {
+      const plus15 = new Date(now.getTime() + 15*60000);
+      let ph = plus15.getHours(), pm = plus15.getMinutes();
+      const rem = pm % 5; if (rem) { pm += 5-rem; } if (pm>=60){ph++;pm-=60;}
+      const todayHasSlot = !(ph > OP_END_H || (ph === OP_END_H && pm > OP_END_M));
+
+      if (todayHasSlot) dateSelect.innerHTML += `<option value="${todayValue}">오늘 (${formatDateLabel(now)})</option>`;
+      dateSelect.innerHTML += `<option value="${tomorrowValue}">내일 (${formatDateLabel(tomorrow)})</option>`;
+    } else { 
+      dateSelect.innerHTML = `<option value="${tomorrowValue}">내일 (${formatDateLabel(tomorrow)})</option>`; 
+    }
+
+    buildTimeOptions(dateSelect.value);
+    dateSelect.onchange = () => buildTimeOptions(dateSelect.value);
+    document.getElementById('reserveModal').classList.add('open');
+  };
+
+  window.closeModal = (id) => document.getElementById(id).classList.remove('open');
+
+  window.submitReservation = async () => {
+    const name = document.getElementById('modalName').value.trim();
+    const date = document.getElementById('modalDate').value;
+    const time = document.getElementById('modalTime').value;
+
+    if (!name) return showToast('이름을 입력해주세요.');
+    if (!time) return showToast('예약 가능한 시간이 없습니다.');
+    if (dbInventory[selectedItem].stock <= 0) return showToast('품절된 물품입니다.');
+
+    // DB: 재고 차감
+    const newStock = dbInventory[selectedItem].stock - 1;
+    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'inventory', selectedItem), { stock: newStock });
+
+    // DB: 예약 등록
+    const [y, m, d] = date.split('-');
+    const dateObj = new Date(+y, +m-1, +d);
+    const dateLabel = formatDateLabel(dateObj);
+    const itemName = dbInventory[selectedItem].name;
+    const itemIcon = dbInventory[selectedItem].icon;
+
+    await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'reservations'), {
+      studentId: currentUser,
+      itemKey: selectedItem,
+      itemName: itemName,
+      itemIcon: itemIcon,
+      name: name, date: date, dateLabel: dateLabel, time: time,
+      status: 'pending',
+      createdAt: Date.now()
+    });
+
+    window.closeModal('reserveModal');
+    showToast('예약 접수! 1초 뒤 문자 앱에서 전송을 눌러주세요.');
+    
+    // SMS 전송
+    const smsMessage = `[SKKU 긴급대여 예약알림]\n- 학번: ${currentUser}\n- 이름: ${name}\n- 물품: ${itemName}\n- 수령예정: ${dateLabel} ${time}`;
+    setTimeout(() => {
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+      const separator = isIOS ? '&' : '?';
+      window.location.href = `sms:${ADMIN_PHONE_NUMBER}${separator}body=${encodeURIComponent(smsMessage)}`;
+    }, 1500);
+  };
+
+  // 3. 반납 프로세스
+  window.openReturnModal = (id, itemKey) => {
+    activeReturnId = { id, itemKey };
+    const modalBox = document.getElementById('returnModalBox');
+    modalBox.innerHTML = `
+      <h3 style="color:var(--skku-green); margin-bottom:12px; font-size:22px; font-weight:900;">📸 무인 반납 인증</h3>
+      <p style="font-size:14px; color:var(--text-muted); margin-bottom:24px; line-height:1.6; font-weight:600;">
+        무인 반납함에 물품을 넣고 사진을 촬영해주세요.<br>
+        사진 첨부 후 반납 완료 버튼을 눌러주세요.
+      </p>
+      <div class="photo-upload-box" onclick="document.getElementById('returnPhotoInput').click()" style="border: 2px dashed var(--border-color); border-radius: 16px; padding: 30px; background: var(--light-bg); cursor:pointer;">
+        <input type="file" id="returnPhotoInput" accept="image/*" capture="environment" onchange="window.previewReturnPhoto(this)" style="display:none;">
+        <i data-lucide="camera" style="width:40px;height:40px; color:var(--text-muted); margin-bottom:10px;"></i>
+        <div class="upload-text" style="font-size:15px; font-weight:800;">사진을 선택하거나 촬영하기</div>
+      </div>
+      <img id="returnPhotoPreview" style="width: 100%; border-radius: 16px; margin-top: 16px; display: none; object-fit: cover; max-height:200px;">
+      <div style="margin-top:24px;">
+        <button class="btn-primary" onclick="window.submitReturn()">안전하게 반납 완료</button>
+        <button class="btn-cancel" onclick="window.closeModal('returnModal')">취소</button>
+      </div>
+    `;
+    document.getElementById('returnModal').classList.add('open');
+    lucide.createIcons();
+  };
+
+  window.previewReturnPhoto = (input) => {
+    const file = input.files[0];
+    if (!file) return;
+    const preview = document.getElementById('returnPhotoPreview');
+    const reader = new FileReader();
+    reader.onload = e => { preview.src = e.target.result; preview.style.display = 'block'; };
+    reader.readAsDataURL(file);
+    const box = input.closest('.photo-upload-box') || document.querySelector('.photo-upload-box');
+    if (box) box.querySelector('.upload-text').textContent = '✅ ' + file.name;
+  };
+
+  window.submitReturn = async () => {
+    const fileInput = document.getElementById('returnPhotoInput');
+    if (!fileInput || !fileInput.files[0]) return showToast('반납 인증 사진을 첨부해주세요.');
+
+    // DB 업데이트: 상태 변경 및 재고 증가
+    await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'reservations', activeReturnId.id), { status: 'returned' });
+    const newStock = dbInventory[activeReturnId.itemKey].stock + 1;
+    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'inventory', activeReturnId.itemKey), { stock: newStock });
+
+    window.closeModal('returnModal');
+    showToast('반납 완료! 이용해 주셔서 감사합니다 😊');
+  };
+
+  // 4. 관리자 컨트롤 프로세스
+  window.updateStock = async (key, delta) => {
+    const newVal = dbInventory[key].stock + delta;
+    if (newVal < 0 || newVal > 99) return; 
+    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'inventory', key), { stock: newVal });
+  };
+
+  window.confirmRes = async (id) => {
+    await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'reservations', id), { status: 'confirmed' });
+    showToast('대여 승인이 완료되었습니다.');
+  };
+
+  // 초기 렌더링
+  window.onload = () => lucide.createIcons();
 </script>
 </body>
 </html>
-
-```
