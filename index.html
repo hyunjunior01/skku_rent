@@ -1,0 +1,777 @@
+```html
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>성균관대학교 긴급 물품 대여 서비스</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<!-- 고급 벡터 아이콘 라이브러리 (Lucide) -->
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+  :root {
+    --skku-green: #003E38; 
+    --skku-green-dark: #002B27;
+    --skku-gold: #D4AF37; 
+    --skku-gold-light: #F2DE94;
+    --light-bg: #F5F7F6;
+    --white: #FFFFFF;
+    --text-main: #1A1A1A;
+    --text-muted: #757575;
+    --border-color: #E2E6E4;
+    --red-alert: #D32F2F;
+    --shadow-premium: 0 20px 40px rgba(0, 62, 56, 0.1);
+    --shadow-soft: 0 8px 24px rgba(0, 0, 0, 0.05);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background: var(--light-bg);
+    color: var(--text-main);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .screen { display: none; min-height: 100vh; }
+  .screen.active { display: flex; flex-direction: column; }
+
+  /* ── PREMIUM LOGIN SCREEN ── */
+  #loginScreen {
+    align-items: center; justify-content: center; padding: 20px;
+    background: linear-gradient(135deg, var(--skku-green-dark) 0%, var(--skku-green) 100%);
+    position: relative; overflow: hidden;
+  }
+
+  #loginScreen::before {
+    content: ''; position: absolute; top: -150px; right: -100px;
+    width: 400px; height: 400px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(212,175,55,0.15) 0%, transparent 70%);
+    z-index: 0; pointer-events: none;
+  }
+
+  .login-card {
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(20px);
+    border-radius: 28px; padding: 50px 32px;
+    width: 100%; max-width: 420px;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.4);
+    position: relative; z-index: 1; text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+  }
+
+  .login-logo { margin-bottom: 30px; }
+  
+  .login-logo .badge {
+    display: inline-block; background: rgba(212, 175, 55, 0.1);
+    color: var(--skku-green); font-size: 13px; font-weight: 900;
+    letter-spacing: 2px; padding: 8px 18px; border-radius: 50px;
+    margin-bottom: 20px; border: 1px solid rgba(212, 175, 55, 0.4);
+  }
+
+  .login-logo h1 { 
+    font-size: 26px; font-weight: 900; color: var(--skku-green); 
+    line-height: 1.3; letter-spacing: -0.5px;
+  }
+  .login-logo h1 span {
+    display: block; font-size: 18px; font-weight: 700;
+    color: var(--skku-gold); margin-top: 8px; letter-spacing: 1px;
+  }
+
+  .login-input-group { text-align: left; margin-bottom: 32px; }
+  .login-input-group label {
+    display: block; font-size: 13px; font-weight: 800; color: var(--text-muted); margin-bottom: 10px;
+  }
+  .login-input-group input {
+    width: 100%; padding: 18px 20px; border: 2px solid var(--border-color);
+    border-radius: 16px; font-size: 16px; font-weight: 500;
+    background: #FDFDFD; transition: all 0.3s ease; outline: none;
+    color: var(--text-main);
+  }
+  .login-input-group input:focus { 
+    border-color: var(--skku-gold); background: var(--white); 
+    box-shadow: 0 0 0 5px rgba(212, 175, 55, 0.1); 
+  }
+
+  .btn-primary {
+    width: 100%; padding: 20px; background: var(--skku-green); color: var(--white);
+    border: none; border-radius: 16px; font-size: 16px; font-weight: 800; cursor: pointer;
+    transition: all 0.3s; letter-spacing: 1px;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .btn-primary:hover { background: var(--skku-green-dark); transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0, 62, 56, 0.2);}
+  .btn-primary:active { transform: scale(0.98); }
+
+  .login-error {
+    display: none; margin-top: 16px; padding: 14px;
+    background: #FFEBEE; color: var(--red-alert);
+    border-radius: 12px; font-size: 13px; font-weight: 700;
+  }
+
+  /* ── HEADER ── */
+  .top-header {
+    background: var(--white); color: var(--skku-green);
+    padding: 20px 24px; display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 20px rgba(0,0,0,0.05);
+  }
+  .header-titles h2 { font-size: 18px; font-weight: 900; color: var(--skku-green); letter-spacing: -0.5px;}
+  .header-titles p { font-size: 13px; color: var(--text-muted); margin-top: 4px; font-weight: 500;}
+  .btn-logout {
+    background: var(--light-bg); color: var(--text-main);
+    border: 1px solid var(--border-color); padding: 10px 18px;
+    border-radius: 20px; font-size: 13px; font-weight: 700; cursor: pointer;
+    transition: 0.2s;
+  }
+  .btn-logout:hover { background: var(--border-color); }
+
+  /* ── CONTENT ── */
+  .content-area {
+    padding: 24px 20px; max-width: 680px; margin: 0 auto; width: 100%; padding-bottom: 80px;
+  }
+
+  .section-card {
+    background: var(--white); border-radius: 24px; padding: 32px 28px; margin-bottom: 24px;
+    box-shadow: var(--shadow-soft); border: 1px solid var(--border-color);
+  }
+  .section-title {
+    display: flex; align-items: center; gap: 12px; font-size: 18px; font-weight: 900; 
+    color: var(--skku-green); margin-bottom: 24px;
+  }
+  .section-title i { color: var(--skku-gold); }
+
+  .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .info-chip { background: var(--light-bg); border-radius: 16px; padding: 20px 16px; text-align: center; }
+  .info-chip .label { font-size: 12px; font-weight: 800; color: var(--text-muted); margin-bottom: 8px; }
+  .info-chip .value { font-size: 14px; font-weight: 800; color: var(--skku-green); line-height: 1.4; }
+
+  /* ── ITEMS GRID ── */
+  .items-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 24px; }
+  @media (min-width: 500px) { .items-grid { grid-template-columns: repeat(4, 1fr); } }
+
+  .item-card {
+    background: var(--white); border: 2px solid var(--border-color);
+    border-radius: 20px; padding: 28px 16px; text-align: center; cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    position: relative; overflow: hidden;
+  }
+  .item-card:hover { border-color: var(--skku-gold); transform: translateY(-5px); box-shadow: var(--shadow-premium); }
+  .item-card.empty { opacity: 0.6; cursor: not-allowed; background: var(--light-bg); border-color: var(--border-color);}
+
+  .item-icon { 
+    width: 48px; height: 48px; margin: 0 auto 16px; 
+    color: var(--skku-green); 
+    background: rgba(0, 62, 56, 0.05); padding: 10px; border-radius: 14px;
+  }
+  .item-name { font-size: 16px; font-weight: 900; color: var(--text-main); margin-bottom: 6px; }
+  .item-sub { font-size: 12px; color: var(--text-muted); margin-bottom: 16px; font-weight: 500;}
+  .stock-badge {
+    display: inline-block; padding: 6px 14px; border-radius: 50px;
+    font-size: 12px; font-weight: 800;
+    background: rgba(212, 175, 55, 0.15); color: #B08D28;
+  }
+  .stock-badge.none { background: #FFEBEE; color: var(--red-alert); }
+
+  /* ── RESERVATION LIST ── */
+  .res-item {
+    background: var(--white); border: 1px solid var(--border-color);
+    border-radius: 20px; padding: 20px; margin-bottom: 16px;
+    display: flex; justify-content: space-between; align-items: center; transition: 0.2s;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+  }
+  .res-info { display: flex; align-items: center; gap: 16px; }
+  .res-info .icon-box {
+    width: 56px; height: 56px; background: var(--light-bg); 
+    border-radius: 16px; display: flex; align-items: center; justify-content: center;
+    color: var(--skku-green);
+  }
+  .res-info .details h4 { font-size: 16px; font-weight: 800; margin-bottom: 6px; color: var(--skku-green); }
+  .res-info .details p { font-size: 13px; color: var(--text-muted); font-weight: 600;}
+
+  .res-actions { display: flex; flex-direction: column; gap: 10px; align-items: flex-end; flex-shrink: 0; }
+  .status-tag { padding: 6px 12px; border-radius: 10px; font-size: 12px; font-weight: 800; white-space: nowrap; }
+  .status-tag.pending { background: #FFF3E0; color: #E65100; }
+  .status-tag.confirmed { background: rgba(0, 62, 56, 0.08); color: var(--skku-green); }
+
+  .btn-return-action {
+    background: var(--skku-green); color: var(--white);
+    border: none; padding: 8px 16px; border-radius: 10px;
+    font-size: 13px; font-weight: 800; cursor: pointer;
+    white-space: nowrap; transition: 0.2s;
+  }
+
+  /* ── ADMIN UI ── */
+  .admin-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 24px; }
+  .stat-card { background: var(--white); border: 1px solid var(--border-color); padding: 24px; border-radius: 20px; text-align: center; box-shadow: var(--shadow-soft);}
+  .stat-card.gold { background: var(--skku-gold); color: var(--white); border:none;}
+  .stat-card h4 { font-size: 13px; color: var(--text-muted); margin-bottom: 10px; font-weight: 700; }
+  .stat-card.gold h4 { color: rgba(255,255,255,0.9); }
+  .stat-card .num { font-size: 36px; font-weight: 900; color: var(--skku-green); }
+  .stat-card.gold .num { color: var(--white); }
+
+  /* 관리자 재고 관리 UI */
+  .admin-inv-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 16px 0; border-bottom: 1px solid var(--border-color);
+  }
+  .admin-inv-row:last-child { border-bottom: none; padding-bottom: 0; }
+  .admin-inv-info { display: flex; align-items: center; gap: 12px; }
+  .admin-inv-info i { color: var(--text-muted); }
+  .admin-inv-info span { font-size: 15px; font-weight: 700; }
+  .admin-inv-controls { display: flex; align-items: center; gap: 16px; }
+  .btn-inv { 
+    width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--border-color);
+    background: var(--white); font-size: 18px; font-weight: bold; color: var(--skku-green);
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+  }
+  .btn-inv:active { background: var(--light-bg); }
+  .inv-count { font-size: 18px; font-weight: 800; min-width: 24px; text-align: center; }
+
+  /* ── MODALS ── */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; background: rgba(0,38,34,0.7);
+    z-index: 1000; align-items: flex-end; justify-content: center; backdrop-filter: blur(5px);
+  }
+  .modal-overlay.open { display: flex; }
+  .modal-box {
+    background: var(--white); border-radius: 32px 32px 0 0;
+    padding: 40px 30px 50px; width: 100%; max-width: 500px;
+    animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    max-height: 90vh; overflow-y: auto;
+  }
+  @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+  .modal-title { font-size: 24px; font-weight: 900; color: var(--skku-green); margin-bottom: 10px; }
+  .modal-sub { font-size: 14px; color: var(--text-muted); margin-bottom: 30px; font-weight: 500;}
+
+  .modal-group { margin-bottom: 24px; }
+  .modal-group label { display: block; font-size: 13px; font-weight: 800; color: var(--text-muted); margin-bottom: 10px; }
+  .modal-group input, .modal-group select {
+    width: 100%; padding: 18px; border: 2px solid var(--border-color);
+    border-radius: 16px; font-size: 15px; background: #FAFAFA;
+    outline: none; transition: 0.3s; font-family: 'Noto Sans KR', sans-serif; font-weight: 600;
+  }
+  .modal-group input:focus, .modal-group select:focus { border-color: var(--skku-gold); background: var(--white); }
+  .modal-group input[readonly] { background: var(--light-bg); color: var(--text-muted); border-color: var(--light-bg);}
+
+  .btn-cancel {
+    width: 100%; padding: 20px; background: transparent; color: var(--text-muted);
+    border: none; font-size: 16px; font-weight: 800; cursor: pointer; margin-top: 10px;
+  }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%) translateY(100px);
+    background: rgba(0, 43, 39, 0.95); color: var(--white); padding: 16px 28px;
+    border-radius: 50px; font-size: 15px; font-weight: 700; opacity: 0;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); z-index: 9999;
+    white-space: nowrap; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+</style>
+</head>
+<body>
+
+<!-- ═══ LOGIN SCREEN ═══ -->
+<div id="loginScreen" class="screen active">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="badge">성균관대학교 (SKKU)</div>
+      <h1>긴급 물품<br><span>대여 서비스</span></h1>
+    </div>
+
+    <div class="login-input-group">
+      <label>학번 입력</label>
+      <input type="text" id="loginInput" placeholder="예: 2024123456" maxlength="20"
+        onkeydown="if(event.key==='Enter') doLogin()" inputmode="numeric">
+    </div>
+
+    <button class="btn-primary" onclick="doLogin()">
+      <i data-lucide="log-in" style="width:20px; height:20px;"></i> 시작하기
+    </button>
+    <div class="login-error" id="loginError">유효한 학번(10자리 숫자)을 입력해주세요.</div>
+  </div>
+</div>
+
+<!-- ═══ USER SCREEN ═══ -->
+<div id="userScreen" class="screen">
+  <div class="top-header">
+    <div class="header-titles">
+      <h2>재고현황 및 신청</h2>
+      <p id="userGreeting">환영합니다</p>
+    </div>
+    <button class="btn-logout" onclick="logout()">로그아웃</button>
+  </div>
+
+  <div class="content-area">
+    
+    <!-- 도서관 정보 -->
+    <div class="section-card" style="padding: 24px;">
+      <div class="section-title" style="margin-bottom:16px;"><i data-lucide="library"></i> 중앙학술정보관 안내</div>
+      <div class="info-grid">
+        <div class="info-chip" style="padding: 16px;">
+          <div class="label">대여 위치</div>
+          <div class="value">3층 멀티미디어자료실</div>
+        </div>
+        <div class="info-chip" style="padding: 16px;">
+          <div class="label">운영 시간</div>
+          <div class="value">09:00 - 21:00</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 대여 물품 목록 -->
+    <div class="section-card">
+      <div class="section-title"><i data-lucide="package"></i> 경영관 필로티 대여 부스</div>
+      <p style="font-size:13px; color:var(--text-muted); margin-bottom:8px; font-weight:600;">
+        운영 시간: <strong style="color:var(--text-main);">14:00 – 17:30</strong><br>
+        <span style="font-size:11px;">(당일 및 익일 예약 가능)</span>
+      </p>
+      <div class="items-grid" id="itemsGrid"></div>
+    </div>
+
+    <!-- 예약 현황 -->
+    <div class="section-card">
+      <div class="section-title"><i data-lucide="clipboard-list"></i> 나의 예약 현황</div>
+      <div id="myReservations">
+        <div style="text-align:center; padding: 40px 20px; color:var(--text-muted); font-size:14px; font-weight:600;">
+          아직 예약한 내역이 없습니다.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ ADMIN SCREEN ═══ -->
+<div id="adminScreen" class="screen">
+  <div class="top-header">
+    <div class="header-titles">
+      <h2>⚙️ 관리자 대시보드</h2>
+      <p>경영관 필로티 부스 통합 관리</p>
+    </div>
+    <button class="btn-logout" onclick="logout()">로그아웃</button>
+  </div>
+  
+  <div class="content-area">
+    <div class="admin-stats">
+      <div class="stat-card">
+        <h4>누적 방문자 수</h4>
+        <div class="num" id="statLogin">0</div>
+      </div>
+      <div class="stat-card gold">
+        <h4>승인 대기 예약</h4>
+        <div class="num" id="statPending">0</div>
+      </div>
+    </div>
+
+    <!-- ✨ 관리자 재고 제어 기능 ✨ -->
+    <div class="section-card">
+      <div class="section-title"><i data-lucide="database"></i> 실시간 재고 관리</div>
+      <div id="adminInventoryList"></div>
+    </div>
+
+    <div class="section-card">
+      <div class="section-title"><i data-lucide="bell-ring"></i> 실시간 예약 승인 대기</div>
+      <div id="adminResList"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ RESERVE MODAL ═══ -->
+<div class="modal-overlay" id="reserveModal">
+  <div class="modal-box">
+    <div class="modal-title" id="modalItemName">물품 신청</div>
+    <div class="modal-sub" id="modalItemSub">신청 정보를 꼼꼼히 확인해주세요.</div>
+
+    <div class="modal-group">
+      <label>이름 (실명)</label>
+      <input type="text" id="modalName" placeholder="예: 홍길동">
+    </div>
+    <div class="modal-group">
+      <label>학번</label>
+      <input type="text" id="modalStudentId" readonly>
+    </div>
+    <div class="modal-group">
+      <label>대여 날짜</label>
+      <select id="modalDate"></select>
+    </div>
+    <div class="modal-group">
+      <label>대여 수령 시간 (14:00 ~ 17:30)</label>
+      <select id="modalTime"></select>
+    </div>
+
+    <button class="btn-primary" onclick="submitReservation()">
+      <i data-lucide="check-circle-2" style="width:20px;"></i> 예약 확정하기
+    </button>
+    <button class="btn-cancel" onclick="closeModal('reserveModal')">취소</button>
+  </div>
+</div>
+
+<!-- ═══ RETURN MODAL ═══ -->
+<div class="modal-overlay" id="returnModal">
+  <div class="modal-box" id="returnModalBox" style="text-align:center;"></div>
+</div>
+
+<!-- ═══ TOAST ═══ -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════
+//  STATE & DATA
+// ═══════════════════════════════
+const ADMIN_CODE = 'admin10';
+const STUDENT_REGEX = /^\d{10}$/;
+
+let currentUser = null;
+let uniqueUsers = new Set(); // 고유 방문자 수 추적
+
+let selectedItem = null;
+let activeReturnId = null;
+
+// 관리자 연락처 (문자 연동용)
+const ADMIN_PHONE_NUMBER = "01085359187"; 
+
+// ✨ 품목 최적화 & 고급 아이콘 적용 ✨
+const inventory = {
+  charger:  { name: '충전기',       icon: 'plug-2',       sub: 'C타입 / 8핀',  stock: 5 },
+  umbrella: { name: '우산',         icon: 'umbrella',     sub: '우천 대비',    stock: 4 },
+  calc_gen: { name: '일반 계산기',   icon: 'calculator',   sub: '수업 및 시험용', stock: 3 },
+  calc_fin: { name: '재무 계산기',   icon: 'bar-chart-2',  sub: '재무관리용',   stock: 2 },
+};
+
+let reservations = [];
+
+// ═══════════════════════════════
+//  DATE/TIME HELPERS
+// ═══════════════════════════════
+const OP_START_H = 14, OP_START_M = 0;
+const OP_END_H   = 17, OP_END_M   = 30;
+
+function nowKST() { return new Date(); }
+function formatDateLabel(d) { const days = ['일','월','화','수','목','금','토']; return `${d.getMonth()+1}월 ${d.getDate()}일(${days[d.getDay()]})`; }
+function formatDateValue(d) { const y = d.getFullYear(); const m = String(d.getMonth()+1).padStart(2,'0'); const dd = String(d.getDate()).padStart(2,'0'); return `${y}-${m}-${dd}`; }
+
+function buildTimeOptions(selectedDateValue) {
+  const now = nowKST();
+  const todayValue = formatDateValue(now);
+  const select = document.getElementById('modalTime');
+  select.innerHTML = '';
+
+  let minH, minM;
+  if (selectedDateValue === todayValue) {
+    const plus15 = new Date(now.getTime() + 15 * 60000);
+    minH = plus15.getHours(); minM = plus15.getMinutes();
+    const rem = minM % 5; if (rem !== 0) { minM += (5 - rem); }
+    if (minM >= 60) { minH += Math.floor(minM/60); minM %= 60; }
+  } else { minH = OP_START_H; minM = OP_START_M; }
+
+  if (minH < OP_START_H || (minH === OP_START_H && minM < OP_START_M)) { minH = OP_START_H; minM = OP_START_M; }
+
+  const afterEnd = minH > OP_END_H || (minH === OP_END_H && minM > OP_END_M);
+  if (afterEnd) { select.innerHTML = '<option value="">예약 가능 시간 없음</option>'; select.disabled = true; return; }
+
+  select.disabled = false;
+  let curH = minH, curM = minM;
+  while (curH < OP_END_H || (curH === OP_END_H && curM <= OP_END_M)) {
+    const hh = String(curH).padStart(2,'0'); const mm = String(curM).padStart(2,'0');
+    select.innerHTML += `<option value="${hh}:${mm}">${hh}:${mm}</option>`;
+    curM += 5; if (curM >= 60) { curH++; curM -= 60; }
+  }
+}
+
+// ═══════════════════════════════
+//  AUTH
+// ═══════════════════════════════
+function doLogin() {
+  const val = document.getElementById('loginInput').value.trim();
+  const err = document.getElementById('loginError');
+
+  if (val === ADMIN_CODE) {
+    currentUser = 'admin';
+    showScreen('adminScreen');
+    refreshAdmin();
+  } else if (STUDENT_REGEX.test(val)) {
+    currentUser = val;
+    uniqueUsers.add(val); 
+    document.getElementById('userGreeting').innerHTML = `<strong style="color:var(--skku-green);">${val}</strong> 학우님`;
+    document.getElementById('modalStudentId').value = val;
+    showScreen('userScreen');
+    renderItems();
+    renderMyReservations();
+  } else {
+    err.style.display = 'block';
+    setTimeout(() => err.style.display = 'none', 3000);
+  }
+}
+
+function logout() {
+  currentUser = null;
+  document.getElementById('loginInput').value = '';
+  showScreen('loginScreen');
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+  lucide.createIcons(); // 화면 전환 시 아이콘 렌더링 갱신
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3500); 
+}
+
+// ═══════════════════════════════
+//  ITEM RENDER
+// ═══════════════════════════════
+function renderItems() {
+  const grid = document.getElementById('itemsGrid');
+  grid.innerHTML = '';
+  Object.entries(inventory).forEach(([key, item]) => {
+    const isOut = item.stock <= 0;
+    grid.innerHTML += `
+      <div class="item-card ${isOut ? 'empty' : ''}" onclick="${isOut ? '' : `openReserveModal('${key}')`}">
+        <div class="item-icon"><i data-lucide="${item.icon}" style="width:28px; height:28px;"></i></div>
+        <div class="item-name">${item.name}</div>
+        <div class="item-sub">${item.sub}</div>
+        <span class="stock-badge ${isOut ? 'none' : ''}">${isOut ? '품절' : `잔여 ${item.stock}개`}</span>
+      </div>`;
+  });
+  lucide.createIcons();
+}
+
+// ═══════════════════════════════
+//  RESERVE MODAL & SMS LOGIC
+// ═══════════════════════════════
+function openReserveModal(key) {
+  selectedItem = key;
+  const item = inventory[key];
+  document.getElementById('modalItemName').textContent = `${item.name} 신청`;
+  document.getElementById('modalName').value = '';
+
+  const now = nowKST();
+  const todayValue = formatDateValue(now);
+  const tomorrow = new Date(now); tomorrow.setDate(now.getDate()+1);
+  const tomorrowValue = formatDateValue(tomorrow);
+
+  const dateSelect = document.getElementById('modalDate');
+  dateSelect.innerHTML = '';
+
+  const isAfterOpEnd = now.getHours() > OP_END_H || (now.getHours() === OP_END_H && now.getMinutes() > OP_END_M);
+
+  if (!isAfterOpEnd) {
+    const plus15 = new Date(now.getTime() + 15*60000);
+    let ph = plus15.getHours(), pm = plus15.getMinutes();
+    const rem = pm % 5; if (rem) { pm += 5-rem; } if (pm>=60){ph++;pm-=60;}
+    const todayHasSlot = !(ph > OP_END_H || (ph === OP_END_H && pm > OP_END_M));
+
+    if (todayHasSlot) { dateSelect.innerHTML += `<option value="${todayValue}">오늘 (${formatDateLabel(now)})</option>`; }
+    dateSelect.innerHTML += `<option value="${tomorrowValue}">내일 (${formatDateLabel(tomorrow)})</option>`;
+  } else { dateSelect.innerHTML = `<option value="${tomorrowValue}">내일 (${formatDateLabel(tomorrow)})</option>`; }
+
+  buildTimeOptions(dateSelect.value);
+  dateSelect.onchange = () => buildTimeOptions(dateSelect.value);
+
+  document.getElementById('reserveModal').classList.add('open');
+}
+
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+function submitReservation() {
+  const name = document.getElementById('modalName').value.trim();
+  const date = document.getElementById('modalDate').value;
+  const time = document.getElementById('modalTime').value;
+
+  if (!name) { showToast('이름을 입력해주세요.'); return; }
+  if (!time || time === '') { showToast('예약 가능한 시간이 없습니다.'); return; }
+  if (inventory[selectedItem].stock <= 0) { showToast('품절된 물품입니다.'); return; }
+
+  inventory[selectedItem].stock--;
+
+  const [y, m, d] = date.split('-');
+  const dateObj = new Date(+y, +m-1, +d);
+  const dateLabel = formatDateLabel(dateObj);
+  const itemName = inventory[selectedItem].name;
+  const itemIcon = inventory[selectedItem].icon;
+
+  reservations.push({
+    id: Date.now(),
+    studentId: currentUser,
+    itemKey: selectedItem,
+    itemName: itemName,
+    itemIcon: itemIcon,
+    name, date, dateLabel, time,
+    status: 'pending'
+  });
+
+  closeModal('reserveModal');
+  
+  showToast('예약이 접수되었습니다! 1초 뒤 열리는 문자 앱에서 전송 버튼을 눌러주세요.');
+  
+  const smsMessage = `[SKKU 긴급대여 예약알림]\n- 학번: ${currentUser}\n- 이름: ${name}\n- 물품: ${itemName}\n- 수령예정: ${dateLabel} ${time}`;
+  
+  setTimeout(() => {
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    const separator = isIOS ? '&' : '?';
+    window.location.href = `sms:${ADMIN_PHONE_NUMBER}${separator}body=${encodeURIComponent(smsMessage)}`;
+  }, 1500);
+
+  renderItems();
+  renderMyReservations();
+}
+
+// ═══════════════════════════════
+//  MY RESERVATIONS
+// ═══════════════════════════════
+function renderMyReservations() {
+  const container = document.getElementById('myReservations');
+  const mine = reservations.filter(r => r.studentId === currentUser && r.status !== 'returned');
+
+  if (mine.length === 0) {
+    container.innerHTML = `<div style="text-align:center; padding: 40px 20px; color:var(--text-muted); font-size:14px; font-weight:600;">현재 대여/예약 중인 내역이 없습니다.</div>`;
+    return;
+  }
+
+  container.innerHTML = [...mine].reverse().map(r => `
+    <div class="res-item">
+      <div class="res-info">
+        <div class="icon-box"><i data-lucide="${r.itemIcon}"></i></div>
+        <div class="details">
+          <h4>${r.itemName}</h4>
+          <p>${r.dateLabel} <strong>${r.time}</strong></p>
+        </div>
+      </div>
+      <div class="res-actions">
+        <span class="status-tag ${r.status}">${r.status === 'pending' ? '승인 대기중' : '대여중'}</span>
+        ${r.status === 'confirmed' ? `<button class="btn-return-action" onclick="openReturnModal(${r.id})">반납하기</button>` : ''}
+      </div>
+    </div>
+  `).join('');
+  lucide.createIcons();
+}
+
+// ═══════════════════════════════
+//  RETURN MODAL
+// ═══════════════════════════════
+function openReturnModal(id) {
+  activeReturnId = id;
+  const modalBox = document.getElementById('returnModalBox');
+
+  modalBox.innerHTML = `
+    <h3 style="color:var(--skku-green); margin-bottom:12px; font-size:22px; font-weight:900;">📸 무인 반납 인증</h3>
+    <p style="font-size:14px; color:var(--text-muted); margin-bottom:24px; line-height:1.6; font-weight:600;">
+      무인 반납함에 물품을 넣고 사진을 촬영해주세요.<br>
+      사진 첨부 후 반납 완료 버튼을 눌러주세요.
+    </p>
+
+    <div class="photo-upload-box" onclick="document.getElementById('returnPhotoInput').click()" style="border: 2px dashed var(--border-color); border-radius: 16px; padding: 30px; background: var(--light-bg); cursor:pointer;">
+      <input type="file" id="returnPhotoInput" accept="image/*" capture="environment" onchange="previewReturnPhoto(this)" style="display:none;">
+      <i data-lucide="camera" style="width:40px;height:40px; color:var(--text-muted); margin-bottom:10px;"></i>
+      <div class="upload-text" style="font-size:15px; font-weight:800;">사진을 선택하거나 촬영하기</div>
+    </div>
+    <img id="returnPhotoPreview" style="width: 100%; border-radius: 16px; margin-top: 16px; display: none; object-fit: cover; max-height:200px;">
+
+    <div style="margin-top:24px;">
+      <button class="btn-primary" onclick="submitReturn()">안전하게 반납 완료</button>
+      <button class="btn-cancel" onclick="closeModal('returnModal')">취소</button>
+    </div>
+  `;
+  document.getElementById('returnModal').classList.add('open');
+  lucide.createIcons();
+}
+
+function previewReturnPhoto(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const preview = document.getElementById('returnPhotoPreview');
+  const reader = new FileReader();
+  reader.onload = e => { preview.src = e.target.result; preview.style.display = 'block'; };
+  reader.readAsDataURL(file);
+
+  const box = input.closest('.photo-upload-box') || document.querySelector('.photo-upload-box');
+  if (box) { box.querySelector('.upload-text').textContent = '✅ ' + file.name; }
+}
+
+function submitReturn() {
+  const fileInput = document.getElementById('returnPhotoInput');
+  if (!fileInput || !fileInput.files[0]) { showToast('반납 인증 사진을 첨부해주세요.'); return; }
+
+  const res = reservations.find(r => r.id === activeReturnId);
+  if (res) { res.status = 'returned'; inventory[res.itemKey].stock++; }
+
+  closeModal('returnModal');
+  showToast('반납 완료! 이용해 주셔서 감사합니다 😊');
+  renderMyReservations();
+  renderItems();
+}
+
+// ═══════════════════════════════
+//  ADMIN LOGIC (재고 컨트롤 포함)
+// ═══════════════════════════════
+function refreshAdmin() {
+  document.getElementById('statLogin').innerText = uniqueUsers.size;
+
+  const pendingList = reservations.filter(r => r.status === 'pending');
+  document.getElementById('statPending').innerText = pendingList.length;
+
+  const invContainer = document.getElementById('adminInventoryList');
+  invContainer.innerHTML = Object.entries(inventory).map(([key, item]) => `
+    <div class="admin-inv-row">
+      <div class="admin-inv-info">
+        <i data-lucide="${item.icon}" style="width:20px;height:20px;"></i>
+        <span>${item.name}</span>
+      </div>
+      <div class="admin-inv-controls">
+        <button class="btn-inv" onclick="updateStock('${key}', -1)">−</button>
+        <div class="inv-count">${item.stock}</div>
+        <button class="btn-inv" onclick="updateStock('${key}', 1)">+</button>
+      </div>
+    </div>
+  `).join('');
+
+  const resContainer = document.getElementById('adminResList');
+  if (pendingList.length === 0) {
+    resContainer.innerHTML = `<div style="text-align:center; padding: 30px 20px; color:var(--text-muted); font-size:14px; font-weight:600;">현재 승인 대기 중인 예약이 없습니다.</div>`;
+  } else {
+    resContainer.innerHTML = pendingList.map(r => `
+      <div class="res-item" style="flex-direction:column; align-items:flex-start; gap:16px;">
+        <div style="display:flex; justify-content:space-between; width:100%; border-bottom:2px solid var(--light-bg); padding-bottom:12px;">
+          <strong style="color:var(--skku-green); font-size:15px; font-weight:900;">${r.studentId} (${r.name})</strong>
+          <span style="font-size:13px; color:var(--text-muted); font-weight:800;">${r.dateLabel} ${r.time}</span>
+        </div>
+        <div style="font-size:16px; font-weight:800; display:flex; align-items:center; gap:8px;">
+          <i data-lucide="${r.itemIcon}" style="width:20px;height:20px;color:var(--skku-gold);"></i> ${r.itemName}
+        </div>
+        <button class="btn-primary" style="padding:14px; font-size:14px;" onclick="confirmRes(${r.id})">물품 수령 확인 (대여 승인)</button>
+      </div>
+    `).join('');
+  }
+  lucide.createIcons();
+}
+
+function updateStock(key, delta) {
+  const newVal = inventory[key].stock + delta;
+  if (newVal < 0 || newVal > 99) return; 
+  inventory[key].stock = newVal;
+  refreshAdmin(); 
+  renderItems();  
+}
+
+function confirmRes(id) {
+  const res = reservations.find(r => r.id === id);
+  if (res) {
+    res.status = 'confirmed';
+    showToast('정상적으로 대여 승인되었습니다.');
+    refreshAdmin();
+  }
+}
+
+window.onload = () => { lucide.createIcons(); }
+</script>
+</body>
+</html>
+
+```
