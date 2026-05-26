@@ -284,8 +284,8 @@
       🔑 시작하기
     </button>
     <div class="login-error" id="loginError">유효한 학번(10자리 숫자)을 입력해주세요.</div>
-    <div class="sync-notice">
-      ☁️ 실시간 클라우드 연동 — 어느 기기에서나 동일한 데이터
+    <div class="sync-notice" id="syncNotice">
+      💾 로컬 저장 모드 — JSONBin 키 설정 시 기기 간 동기화
     </div>
   </div>
 </div>
@@ -421,9 +421,18 @@
   ════════════════════════════════════════════════════════
 */
 
-const JSONBIN_KEY = '$2a$10$REPLACE_WITH_YOUR_JSONBIN_KEY'; // ← 여기에 JSONBin Master Key 입력
+// ══════════════════════════════════════════════════════
+// ☁️ JSONBin.io 클라우드 연동 설정 (기기 간 실시간 동기화)
+//   1. https://jsonbin.io 무료 가입
+//   2. API Keys → Master Key 복사 후 아래에 붙여넣기
+//   키를 설정하지 않으면 이 기기의 로컬 저장소만 사용됩니다.
+// ══════════════════════════════════════════════════════
+const JSONBIN_KEY = ''; // ← JSONBin Master Key 입력 (예: $2a$10$xxx...)
 const JSONBIN_BASE = 'https://api.jsonbin.io/v3';
 let BIN_ID = localStorage.getItem('skku_bin_id') || null;
+
+// 키가 비어있으면 localStorage 모드로 동작
+const USE_LOCAL = !JSONBIN_KEY || JSONBIN_KEY.startsWith('$2a$10$REPLACE');
 
 const ADMIN_CODE   = 'admin10';
 const STUDENT_REGEX = /^\d{10}$/;
@@ -455,61 +464,121 @@ function showLoading(msg='처리 중...') {
 }
 function hideLoading() { document.getElementById('loadingOverlay').classList.remove('show'); }
 
-/* ── JSONBin API ── */
+/* ══ 저장소 추상화 ══
+   USE_LOCAL=true  → localStorage (단일 기기)
+   USE_LOCAL=false → JSONBin.io   (기기 간 실시간 공유)        */
+
+function loadLocal() {
+  try {
+    const saved = localStorage.getItem('skku_db_v2');
+    return saved ? JSON.parse(saved) : null;
+  } catch(e) { return null; }
+}
+function saveLocal() {
+  localStorage.setItem('skku_db_v2', JSON.stringify(db));
+}
+
 async function initBin() {
-  if (BIN_ID) {
-    db = await fetchBin();
-    // 혹시 기존 bin에 필드 없으면 defaultData로 보완
-    if (!db) db = { ...defaultData };
-    if (!db.inventory) db.inventory = defaultData.inventory;
-    if (!db.reservations) db.reservations = [];
-    if (!db.uniqueUsers) db.uniqueUsers = [];
+  if (USE_LOCAL) {
+    db = loadLocal();
+    if (!db) db = JSON.parse(JSON.stringify(defaultData)); // 깊은 복사
+    _ensureFields();
     return;
   }
-  // 신규 Bin 생성
-  const res = await fetch(`${JSONBIN_BASE}/b`, {
-    method:'POST',
-    headers:{ 'Content-Type':'application/json', 'X-Master-Key': JSONBIN_KEY, 'X-Bin-Name':'SKKU-Rental' },
-    body: JSON.stringify(defaultData)
+  try {
+    if (BIN_ID) {
+      db = await _fetchBin();
+      if (!db) db = JSON.parse(JSON.stringify(defaultData));
+      _ensureFields();
+    } else {
+      // 신규 Bin 생성
+      const res = await fetch(`${JSONBIN_BASE}/b`, {
+        method:'POST',
+        headers:{ 'Content-Type':'application/json', 'X-Master-Key': JSONBIN_KEY, 'X-Bin-Name':'SKKU-Rental' },
+        body: JSON.stringify(defaultData)
+      });
+      if (!res.ok) throw new Error('bin create failed');
+      const data = await res.json();
+      BIN_ID = data.metadata.id;
+      localStorage.setItem('skku_bin_id', BIN_ID);
+      db = JSON.parse(JSON.stringify(defaultData));
+    }
+  } catch(e) {
+    console.warn('JSONBin 연결 실패, 로컬 모드로 전환:', e);
+    db = loadLocal() || JSON.parse(JSON.stringify(defaultData));
+    _ensureFields();
+  }
+}
+
+function _ensureFields() {
+  if (!db.inventory)    db.inventory    = defaultData.inventory;
+  if (!db.reservations) db.reservations = [];
+  if (!db.uniqueUsers)  db.uniqueUsers  = [];
+}
+
+async function _fetchBin() {
+  const res = await fetch(`${JSONBIN_BASE}/b/${BIN_ID}/latest`, {
+    headers:{ 'X-Master-Key': JSONBIN_KEY }
   });
+  if (!res.ok) return null;
   const data = await res.json();
-  BIN_ID = data.metadata.id;
-  localStorage.setItem('skku_bin_id', BIN_ID);
-  db = defaultData;
+  return data.record || null;
 }
 
 async function fetchBin() {
-  try {
-    const res = await fetch(`${JSONBIN_BASE}/b/${BIN_ID}/latest`, {
-      headers:{ 'X-Master-Key': JSONBIN_KEY }
-    });
-    const data = await res.json();
-    return data.record;
-  } catch(e) { return null; }
+  if (USE_LOCAL) return db; // 로컬 모드는 현재 상태 반환
+  try { return await _fetchBin(); } catch(e) { return null; }
 }
 
 async function saveBin() {
+  if (USE_LOCAL) { saveLocal(); return; }
   try {
-    await fetch(`${JSONBIN_BASE}/b/${BIN_ID}`, {
+    const res = await fetch(`${JSONBIN_BASE}/b/${BIN_ID}`, {
       method:'PUT',
       headers:{ 'Content-Type':'application/json', 'X-Master-Key': JSONBIN_KEY },
       body: JSON.stringify(db)
     });
-  } catch(e) { showToast('⚠️ 서버 저장 실패. 다시 시도해주세요.'); }
+    if (!res.ok) throw new Error('save failed');
+    // 로컬에도 캐시
+    saveLocal();
+  } catch(e) {
+    // 클라우드 실패 시 로컬에라도 저장
+    saveLocal();
+    showToast('⚠️ 클라우드 저장 실패. 로컬 저장됨.');
+  }
 }
 
-/* 폴링: 15초마다 최신 데이터 갱신 */
+/* 폴링: 15초마다 최신 데이터 갱신 (클라우드 모드에서만) */
 function startPolling() {
   stopPolling();
+  if (USE_LOCAL) {
+    // 로컬 모드: storage 이벤트로 같은 기기 탭 간 동기화
+    window.addEventListener('storage', _onStorage);
+    return;
+  }
   pollTimer = setInterval(async () => {
-    const fresh = await fetchBin();
-    if (!fresh) return;
-    db = fresh;
-    if (currentUser === 'admin') refreshAdmin();
-    else if (currentUser) { renderItems(); renderMyReservations(); }
+    try {
+      const fresh = await _fetchBin();
+      if (!fresh) return;
+      db = fresh; _ensureFields();
+      if (currentUser === 'admin') refreshAdmin();
+      else if (currentUser) { renderItems(); renderMyReservations(); }
+    } catch(e) {}
   }, 15000);
 }
-function stopPolling() { if(pollTimer) clearInterval(pollTimer); }
+function stopPolling() {
+  if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
+  window.removeEventListener('storage', _onStorage);
+}
+function _onStorage(e) {
+  if (e.key !== 'skku_db_v2') return;
+  try {
+    const fresh = JSON.parse(e.newValue);
+    if (fresh) { db = fresh; _ensureFields(); }
+    if (currentUser === 'admin') refreshAdmin();
+    else if (currentUser) { renderItems(); renderMyReservations(); }
+  } catch(e) {}
+}
 
 /* ── 시간 유틸 ── */
 const OP_START_H=14, OP_START_M=0, OP_END_H=17, OP_END_M=30;
@@ -818,6 +887,17 @@ function previewReturnPhoto(input) {
   reader.readAsDataURL(file);
   document.getElementById('uploadText').textContent = '✅ ' + file.name;
 }
+
+// 페이지 로드 시 모드 표시 업데이트
+window.addEventListener('DOMContentLoaded', () => {
+  const notice = document.getElementById('syncNotice');
+  if (!USE_LOCAL) {
+    notice.style.background = '#E3F2FD';
+    notice.style.borderColor = '#90CAF9';
+    notice.style.color = '#1565C0';
+    notice.textContent = '☁️ 클라우드 연동 모드 — 모든 기기에서 실시간 동기화';
+  }
+});
 
 async function submitReturn() {
   const fi = document.getElementById('returnPhotoInput');
